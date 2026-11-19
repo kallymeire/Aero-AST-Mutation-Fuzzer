@@ -2,11 +2,12 @@
 import pathlib
 
 
-RESOURCE_RELEASE_CALLS = {"close", "release", "free", "unlock"}
+RESOURCE_RELEASE_CALLS = {"close", "release", "free", "unlock", "acquire"}
+CONTEXT_KEYWORDS = ("lock", "mutex", "sem", "semaphore", "thread", "file", "open", "conn", "connection", "session", "socket")
 
 
 class ConcurrencyMemoryMutator(ast.NodeTransformer):
-    """Aplica mutações focadas em concorrência (locks/with) e liberação de recursos/memória."""
+    """Aplica mutações focadas em concorrência (locks/with/async with) e liberação/aquisição de recursos."""
 
     def __init__(self, site_index: int):
         self.site_index = site_index
@@ -22,13 +23,20 @@ class ConcurrencyMemoryMutator(ast.NodeTransformer):
             self.mutation_kind = kind
         return matched
 
-    def visit_With(self, node: ast.With):
+    def _handle_with(self, node):
         self.generic_visit(node)
         ctx_text = " ".join(ast.unparse(item.context_expr).lower() for item in node.items)
-        if any(k in ctx_text for k in ("lock", "mutex", "sem", "thread", "file", "open")):
-            if self._hit(node, "unwrap_with_context"):
+        if any(k in ctx_text for k in CONTEXT_KEYWORDS):
+            kind = "unwrap_async_with_context" if isinstance(node, ast.AsyncWith) else "unwrap_with_context"
+            if self._hit(node, kind):
                 return node.body
         return node
+
+    def visit_With(self, node: ast.With):
+        return self._handle_with(node)
+
+    def visit_AsyncWith(self, node: ast.AsyncWith):
+        return self._handle_with(node)
 
     def visit_Expr(self, node: ast.Expr):
         self.generic_visit(node)
@@ -40,20 +48,24 @@ class ConcurrencyMemoryMutator(ast.NodeTransformer):
         return node
 
 
-def generate_concurrency_mutants(code: str):
+def _count_sites(code: str) -> int:
     tree = ast.parse(code)
     total = 0
     for node in ast.walk(tree):
-        if isinstance(node, ast.With):
+        if isinstance(node, (ast.With, ast.AsyncWith)):
             ctx_text = " ".join(ast.unparse(item.context_expr).lower() for item in node.items)
-            if any(k in ctx_text for k in ("lock", "mutex", "sem", "thread", "file", "open")):
+            if any(k in ctx_text for k in CONTEXT_KEYWORDS):
                 total += 1
         elif isinstance(node, ast.Expr) and isinstance(node.value, ast.Call):
             fn = node.value.func
             name = fn.id if isinstance(fn, ast.Name) else (fn.attr if isinstance(fn, ast.Attribute) else "")
             if name.lower() in RESOURCE_RELEASE_CALLS:
                 total += 1
+    return total
 
+
+def generate_concurrency_mutants(code: str):
+    total = _count_sites(code)
     mutants = []
     for idx in range(total):
         mutator = ConcurrencyMemoryMutator(idx)
