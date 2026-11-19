@@ -85,36 +85,44 @@ def diff_lines(a, b):
     return "", ""
 
 
-def run(project, target, test_cmd, out="results.json"):
-    project, src = pathlib.Path(project), (pathlib.Path(project) / target)
-    code, mutants = src.read_text(), []
-    orig = ast.unparse(ast.parse(code)).splitlines()
+import concurrent.futures
+import os
+
+def _eval_mutant(args):
+    mutant_id, project, target, test_cmd, op, k, code = args
+    m = Mutator(op, k)
+    tree = ast.fix_missing_locations(m.visit(ast.parse(code)))
+    with tempfile.TemporaryDirectory() as d:
+        work = pathlib.Path(d) / 'p'
+        shutil.copytree(project, work)
+        (work / target).write_text(ast.unparse(tree), encoding='utf-8')
+        t0 = time.time()
+        try:
+            r = subprocess.run(test_cmd, shell=True, cwd=work, capture_output=True, timeout=30)
+            killed = r.returncode != 0
+        except subprocess.TimeoutExpired:
+            killed = True
+        return {'id': mutant_id, 'op': op, 'line': getattr(m, 'line', 0), 'status': 'killed' if killed else 'survived', 'ms': int((time.time() - t0) * 1000)}
+
+def run(project, target, test_cmd, out='results.json', workers=None):
+    code = (pathlib.Path(project) / target).read_text(encoding='utf-8')
+    tasks = []
+    mid = 1
     for op in OPS:
         for k in range(count_sites(code, op)):
-            m = Mutator(op, k)
-            tree = ast.fix_missing_locations(m.visit(ast.parse(code)))
-            mut_src = ast.unparse(tree)
-            before, after = diff_lines(orig, mut_src.splitlines())
-            with tempfile.TemporaryDirectory() as d:
-                work = pathlib.Path(d) / "p"
-                shutil.copytree(project, work)
-                (work / target).write_text(mut_src)
-                t0 = time.time()
-                try:
-                    r = subprocess.run(test_cmd, shell=True, cwd=work,
-                                       capture_output=True, timeout=30)
-                    killed = r.returncode != 0
-                except subprocess.TimeoutExpired:
-                    killed = True  # timeout = comportamento alterado
-            mutants.append({"id": len(mutants) + 1, "op": op, "line": m.line, "fn": m.fn, "before": before, "after": after,
-                            "status": "killed" if killed else "survived",
-                            "ms": int((time.time() - t0) * 1000)})
-    json.dump({"target": target, "edges": call_graph(ast.parse(code)),
-               "mutants": mutants}, open(out, "w"), indent=2)
-    surv = sum(x["status"] == "survived" for x in mutants)
-    print(f"{len(mutants)} mutantes | {surv} sobreviveram | score "
-          f"{100 * (1 - surv / max(1, len(mutants))):.1f}%")
+            tasks.append((mid, project, target, test_cmd, op, k, code))
+            mid += 1
+    max_workers = workers or os.cpu_count() or 4
+    mutants = []
+    with concurrent.futures.ProcessPoolExecutor(max_workers=max_workers) as ex:
+        for res in ex.map(_eval_mutant, tasks):
+            mutants.append(res)
+    mutants.sort(key=lambda x: x['id'])
+    with open(out, 'w', encoding='utf-8') as f:
+        json.dump({'target': target, 'mutants': mutants}, f, indent=2)
+    surv = sum(x['status'] == 'survived' for x in mutants)
+    score = 100 * (1 - surv / max(1, len(mutants)))
+    print(f'{len(mutants)} mutantes | {surv} sobreviveram | score {score:.1f}% (workers={max_workers})')
 
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     run(*sys.argv[1:4])
