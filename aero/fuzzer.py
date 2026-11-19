@@ -1,11 +1,14 @@
-"""Aero-AST-Mutation-Fuzzer: nucleo de mutacao de AST (Python).
+"""Aero-AST-Mutation-Fuzzer: motor de mutacao de AST (Python).
 
-Uso: python fuzzer.py <pasta_do_projeto> <arquivo_alvo.py> "<comando de teste>"
-Gera results.json, que o dashboard le diretamente.
+Uso: python aero/fuzzer.py <pasta_do_projeto> <arquivo_alvo.py> "<comando de teste>"
+         [-j N] [-o results.json] [--report report.md]
 """
-import ast, difflib, json, pathlib, shutil, subprocess, sys, tempfile, textwrap, time
+import argparse, ast, difflib, json, os, pathlib, shutil, subprocess, sys
+import tempfile, textwrap, time
+from concurrent.futures import ThreadPoolExecutor
 
-OPS = ["CMP_FLIP", "CONST_OFF_BY_ONE", "BOOL_SWAP", "LOCK_REMOVE"]
+OPS = ["CMP_FLIP", "CONST_OFF_BY_ONE", "BOOL_SWAP", "LOCK_REMOVE", "JOIN_REMOVE"]
+CONCURRENCY = {"LOCK_REMOVE", "JOIN_REMOVE"}
 CMP_SWAP = {ast.Lt: ast.LtE, ast.LtE: ast.Lt, ast.Gt: ast.GtE,
             ast.GtE: ast.Gt, ast.Eq: ast.NotEq, ast.NotEq: ast.Eq}
 
@@ -57,6 +60,15 @@ class Mutator(ast.NodeTransformer):
             return n.body
         return n
 
+    def visit_Expr(self, n):  # remove thread.join() -> corrida com o fim da thread
+        self.generic_visit(n)
+        v = n.value
+        if (self.op == "JOIN_REMOVE" and isinstance(v, ast.Call)
+                and isinstance(v.func, ast.Attribute) and v.func.attr == "join"
+                and not v.args and self._hit(n)):
+            return ast.copy_location(ast.Pass(), n)
+        return n
+
 
 def call_graph(tree):
     """Grafo de chamadas entre funcoes definidas no proprio arquivo."""
@@ -85,36 +97,95 @@ def diff_lines(a, b):
     return "", ""
 
 
-def run(project, target, test_cmd, out="results.json"):
-    project, src = pathlib.Path(project), (pathlib.Path(project) / target)
-    code, mutants = src.read_text(), []
+def _eval(job, project, target, test_cmd, code, orig):
+    op, k = job
+    m = Mutator(op, k)
+    tree = ast.fix_missing_locations(m.visit(ast.parse(code)))
+    mut_src = ast.unparse(tree)
+    before, after = diff_lines(orig, mut_src.splitlines())
+    with tempfile.TemporaryDirectory() as d:
+        work = pathlib.Path(d) / "p"
+        shutil.copytree(project, work)
+        (work / target).write_text(mut_src, encoding="utf-8")
+        t0 = time.time()
+        try:
+            r = subprocess.run(test_cmd, shell=True, cwd=work,
+                               capture_output=True, timeout=30)
+            killed = r.returncode != 0
+        except subprocess.TimeoutExpired:
+            killed = True  # timeout = comportamento alterado
+    return {"op": op, "line": m.line, "fn": m.fn, "before": before, "after": after,
+            "status": "killed" if killed else "survived",
+            "ms": int((time.time() - t0) * 1000)}
+
+
+def ranking(mutants):
+    """Risco por funcao: quem tem mais mutantes sobreviventes vem primeiro."""
+    by = {}
+    for m in mutants:
+        a = by.setdefault(m["fn"], [0, 0])
+        a[0] += 1
+        a[1] += m["status"] == "survived"
+    rows = [{"fn": f, "total": t, "survived": s, "rate": round(s / t, 3)}
+            for f, (t, s) in by.items()]
+    return sorted(rows, key=lambda r: (-r["survived"], -r["rate"], r["fn"]))
+
+
+def make_report(data):
+    ms = data["mutants"]
+    surv = [m for m in ms if m["status"] == "survived"]
+    score = 100 * (1 - len(surv) / max(1, len(ms)))
+    out = [f"# Relatório de mutação: `{data['target']}`", "",
+           f"**Mutation score: {score:.1f}%** ({len(ms) - len(surv)} detectados, "
+           f"{len(surv)} sobreviveram, {len(ms)} no total)", "",
+           "## Ranking de risco por função", "",
+           "| Função | Mutantes | Sobreviveram | Taxa |", "|---|---:|---:|---:|"]
+    out += [f"| `{r['fn']}` | {r['total']} | {r['survived']} | {100 * r['rate']:.0f}% |"
+            for r in data["risk"]]
+    out += ["", "## Mutantes que sobreviveram", ""]
+    for m in surv[:15]:
+        flag = " ⚠️ concorrência" if m["op"] in CONCURRENCY else ""
+        out += [f"**#{m['id']} `{m['op']}`** em `{m['fn']}` (linha {m['line']}){flag}", "",
+                "```diff", *("- " + x for x in m["before"].splitlines()),
+                *("+ " + x for x in m["after"].splitlines()), "```", ""]
+    if len(surv) > 15:
+        out.append(f"_...e mais {len(surv) - 15} mutantes._")
+    return "\n".join(out) + "\n"
+
+
+def run(project, target, test_cmd, out="results.json", jobs=None, report=None):
+    t0, project = time.time(), pathlib.Path(project)
+    code = (project / target).read_text(encoding="utf-8")
     orig = ast.unparse(ast.parse(code)).splitlines()
-    for op in OPS:
-        for k in range(count_sites(code, op)):
-            m = Mutator(op, k)
-            tree = ast.fix_missing_locations(m.visit(ast.parse(code)))
-            mut_src = ast.unparse(tree)
-            before, after = diff_lines(orig, mut_src.splitlines())
-            with tempfile.TemporaryDirectory() as d:
-                work = pathlib.Path(d) / "p"
-                shutil.copytree(project, work)
-                (work / target).write_text(mut_src)
-                t0 = time.time()
-                try:
-                    r = subprocess.run(test_cmd, shell=True, cwd=work,
-                                       capture_output=True, timeout=30)
-                    killed = r.returncode != 0
-                except subprocess.TimeoutExpired:
-                    killed = True  # timeout = comportamento alterado
-            mutants.append({"id": len(mutants) + 1, "op": op, "line": m.line, "fn": m.fn, "before": before, "after": after,
-                            "status": "killed" if killed else "survived",
-                            "ms": int((time.time() - t0) * 1000)})
-    json.dump({"target": target, "edges": call_graph(ast.parse(code)),
-               "mutants": mutants}, open(out, "w"), indent=2)
-    surv = sum(x["status"] == "survived" for x in mutants)
+    todo = [(op, k) for op in OPS for k in range(count_sites(code, op))]
+    jobs = jobs or os.cpu_count() or 4
+    with ThreadPoolExecutor(max_workers=jobs) as pool:
+        res = list(pool.map(lambda j: _eval(j, project, target, test_cmd, code, orig), todo))
+    mutants = [{"id": i, **r} for i, r in enumerate(res, 1)]
+    data = {"target": target, "edges": call_graph(ast.parse(code)),
+            "risk": ranking(mutants), "mutants": mutants}
+    with open(out, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+    if report:
+        pathlib.Path(report).write_text(make_report(data), encoding="utf-8")
+    surv = sum(m["status"] == "survived" for m in mutants)
     print(f"{len(mutants)} mutantes | {surv} sobreviveram | score "
-          f"{100 * (1 - surv / max(1, len(mutants))):.1f}%")
+          f"{100 * (1 - surv / max(1, len(mutants))):.1f}% | {jobs} workers | "
+          f"{time.time() - t0:.1f}s")
+    return data
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser(description="Mutation testing por AST (Python).")
+    ap.add_argument("project", help="pasta do projeto")
+    ap.add_argument("target", help="arquivo alvo, relativo à pasta do projeto")
+    ap.add_argument("test_cmd", help="comando que roda os testes")
+    ap.add_argument("-j", "--jobs", type=int, help="mutantes em paralelo (padrão: nº de CPUs)")
+    ap.add_argument("-o", "--out", default="results.json")
+    ap.add_argument("--report", help="gera um relatório em Markdown neste caminho")
+    a = ap.parse_args(argv)
+    run(a.project, a.target, a.test_cmd, a.out, a.jobs, a.report)
 
 
 if __name__ == "__main__":
-    run(*sys.argv[1:4])
+    main()

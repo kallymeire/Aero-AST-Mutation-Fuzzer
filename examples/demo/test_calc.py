@@ -1,7 +1,7 @@
 # Testes razoáveis, mas incompletos DE PROPÓSITO: assim alguns mutantes
 # sobrevivem e o dashboard mostra onde a cobertura é frágil.
 import calc
-from calc import validate, clamp, add, process, main
+from calc import validate, clamp, add, process, main, run_workers
 
 
 def test_validate():
@@ -31,5 +31,10 @@ def test_main():
     assert main() == (20, 4.5)
 
 
+def test_workers():
+    calc.total = 0
+    assert run_workers([1, 2, 3]) >= 0
+
+
 if __name__ == "__main__":
-    test_validate(); test_clamp(); test_add(); test_process(); test_main()
+    test_validate(); test_clamp(); test_add(); test_process(); test_main(); test_workers()

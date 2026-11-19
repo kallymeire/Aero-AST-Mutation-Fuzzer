@@ -67,8 +67,9 @@ flowchart LR
 | `CONST_OFF_BY_ONE` | Soma 1 a uma constante inteira | `limit = 100` → `101` |
 | `BOOL_SWAP` | Troca `and` por `or` (e vice-versa) | `a and b` → `a or b` |
 | `LOCK_REMOVE` | Remove a seção crítica protegida por lock | `with lock:` → *(sem lock)* |
+| `JOIN_REMOVE` | Remove o `join()` de uma thread | `t.join()` → *(removido)* |
 
-`LOCK_REMOVE` é o ponto de partida para auditar **concorrência**: se remover o lock não quebra nenhum teste, nenhum teste exercita acesso concorrente.
+`LOCK_REMOVE` e `JOIN_REMOVE` são o ponto de partida para auditar **concorrência**: se remover o lock ou o `join()` não quebra nenhum teste, nenhum teste exercita acesso concorrente. Esses sobreviventes aparecem marcados com ⚠️ no relatório.
 
 ## 🚀 Começar em 1 minuto
 
@@ -83,7 +84,7 @@ python aero/fuzzer.py examples/demo calc.py "python -m pytest -q"
 Saída esperada:
 
 ```
-21 mutantes | 13 sobreviveram | score 38.1%
+22 mutantes | 14 sobreviveram | score 36.4% | 8 workers | 0.4s
 ```
 
 Depois abra `docs/index.html` no navegador, clique em **Carregar JSON** e escolha o `results.json` gerado.
@@ -91,8 +92,17 @@ Depois abra `docs/index.html` no navegador, clique em **Carregar JSON** e escolh
 Uso com o seu projeto:
 
 ```bash
-python aero/fuzzer.py <pasta_do_projeto> <arquivo_alvo.py> "<comando de teste>"
+python aero/fuzzer.py <pasta_do_projeto> <arquivo_alvo.py> "<comando de teste>" \
+       -j 8 --report report.md
 ```
+
+| Opção | O que faz |
+|---|---|
+| `-j N` | Roda N mutantes em paralelo (padrão: número de CPUs) |
+| `-o arquivo.json` | Caminho do resultado (padrão: `results.json`) |
+| `--report arquivo.md` | Gera relatório em Markdown com ranking de risco e diffs |
+
+No GitHub Actions, o relatório também aparece no resumo de cada execução.
 
 ### Formato do `results.json`
 
@@ -100,6 +110,7 @@ python aero/fuzzer.py <pasta_do_projeto> <arquivo_alvo.py> "<comando de teste>"
 {
   "target": "calc.py",
   "edges": [["main", "process"], ["process", "add"]],
+  "risk": [{"fn": "validate", "total": 5, "survived": 4, "rate": 0.8}],
   "mutants": [
     {"id": 1, "op": "CMP_FLIP", "line": 8, "fn": "validate",
      "before": "if v < 0 or v > limit:", "after": "if v <= 0 or v > limit:",
@@ -124,15 +135,17 @@ Aero-AST-Mutation-Fuzzer/
 
 ## 🧭 Roadmap
 
-- [x] Motor de mutação por AST com 4 operadores
+- [x] Motor de mutação por AST com 5 operadores (comparação, constante, booleano, lock, join)
 - [x] Grafo de chamadas entre funções e registro do diff real
 - [x] Dashboard interativo com viagem no tempo
 - [ ] ICFG completo (fluxo de controle intra e interprocedural)
 - [ ] Suporte a C/C++ via LLVM IR (`clang -emit-llvm` + `llvmlite`)
-- [ ] Operadores de concorrência e memória (ordem de locks, `free` antecipado)
+- [x] Operadores básicos de concorrência (`LOCK_REMOVE`, `JOIN_REMOVE`)
+- [ ] Mais operadores de concorrência e memória (ordem de locks, `free` antecipado)
 - [ ] Geração de mutantes guiada por gramática
-- [ ] Ranking de risco por função e relatório em Markdown/PR comment
-- [ ] Execução paralela dos mutantes
+- [x] Ranking de risco por função e relatório em Markdown
+- [ ] Comentário automático no Pull Request com o relatório
+- [x] Execução paralela dos mutantes (`-j`)
 
 ## ⚠️ Limitações
 

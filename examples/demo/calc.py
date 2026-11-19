@@ -42,3 +42,12 @@ def process(values, lo=0, hi=10):
 def main():
     values = [3, 12, -4, 7]
     return process(values), average(values)
+
+
+def run_workers(values):
+    threads = [threading.Thread(target=add, args=(v,)) for v in values]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    return total

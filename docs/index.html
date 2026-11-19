@@ -57,8 +57,8 @@ pre{margin:3px 0;padding:6px 9px;border-radius:8px;font:11.5px/1.4 var(--mono);w
 <div id="pal" hidden><div><input id="pi" placeholder="Digite um comando…"><div id="pl"></div></div></div>
 <script>
 const $=i=>document.getElementById(i);
-const LBL={CMP_FLIP:"Inverter comparação",CONST_OFF_BY_ONE:"Constante ±1",BOOL_SWAP:"Trocar and/or",LOCK_REMOVE:"Remover lock"};
-const SH={CMP_FLIP:"Compar.",CONST_OFF_BY_ONE:"Const ±1",BOOL_SWAP:"And/Or",LOCK_REMOVE:"Lock"};
+const LBL={CMP_FLIP:"Inverter comparação",CONST_OFF_BY_ONE:"Constante ±1",BOOL_SWAP:"Trocar and/or",LOCK_REMOVE:"Remover lock",JOIN_REMOVE:"Remover join"};
+const SH={CMP_FLIP:"Compar.",CONST_OFF_BY_ONE:"Const ±1",BOOL_SWAP:"And/Or",LOCK_REMOVE:"Lock",JOIN_REMOVE:"Join"};
 const EX={CMP_FLIP:["if x < lo:","if x <= lo:"],CONST_OFF_BY_ONE:["limit = 10","limit = 11"],BOOL_SWAP:["if a and b:","if a or b:"],LOCK_REMOVE:["with lock:\n    total += n","total += n  # lock removido"]};
 function demo(){const ops=Object.keys(LBL),fn=["main","parse","clamp","add","worker","flush"],m=[];let s=7;for(let i=1;i<=72;i++){s=(s*37+11)%101;const ln=3+((s*7+i)%58);m.push({id:i,op:ops[i%4],line:ln,fn:fn[Math.min(5,Math.floor((ln-3)/10))],status:s%5<3?"killed":"survived",ms:40+s*3})}
  return{target:"demo.py",edges:[["main","parse"],["main","clamp"],["main","worker"],["parse","clamp"],["worker","add"],["worker","flush"],["add","flush"]],mutants:m}}

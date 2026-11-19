@@ -14,8 +14,12 @@ jobs:
       - name: Testes do próprio fuzzer
         run: python -m pytest tests -q
       - name: Rodar o fuzzer no exemplo
-        run: python aero/fuzzer.py examples/demo calc.py "python -m pytest -q"
+        run: |
+          python aero/fuzzer.py examples/demo calc.py "python -m pytest -q" --report report.md
+          cat report.md >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
         with:
           name: results
-          path: results.json
+          path: |
+            results.json
+            report.md
