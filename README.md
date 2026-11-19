@@ -132,7 +132,7 @@ Aero-AST-Mutation-Fuzzer/
 - [ ] Operadores de concorrência e memória (ordem de locks, `free` antecipado)
 - [ ] Geração de mutantes guiada por gramática
 - [ ] Ranking de risco por função e relatório em Markdown/PR comment
-- [x] Execução paralela dos mutantes
+- [ ] Execução paralela dos mutantes
 
 ## ⚠️ Limitações
 
