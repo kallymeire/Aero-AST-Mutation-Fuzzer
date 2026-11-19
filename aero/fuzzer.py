@@ -7,6 +7,11 @@ import argparse, ast, difflib, json, os, pathlib, shutil, subprocess, sys
 import tempfile, textwrap, time
 from concurrent.futures import ThreadPoolExecutor
 
+try:
+    from aero.icfg import build_icfg, locate
+except ImportError:  # executado como script: python aero/fuzzer.py
+    from icfg import build_icfg, locate
+
 OPS = ["CMP_FLIP", "CONST_OFF_BY_ONE", "BOOL_SWAP", "LOCK_REMOVE", "JOIN_REMOVE"]
 CONCURRENCY = {"LOCK_REMOVE", "JOIN_REMOVE"}
 CMP_SWAP = {ast.Lt: ast.LtE, ast.LtE: ast.Lt, ast.Gt: ast.GtE,
@@ -161,8 +166,11 @@ def run(project, target, test_cmd, out="results.json", jobs=None, report=None):
     jobs = jobs or os.cpu_count() or 4
     with ThreadPoolExecutor(max_workers=jobs) as pool:
         res = list(pool.map(lambda j: _eval(j, project, target, test_cmd, code, orig), todo))
+    icfg = build_icfg(code)
     mutants = [{"id": i, **r} for i, r in enumerate(res, 1)]
-    data = {"target": target, "edges": call_graph(ast.parse(code)),
+    for m in mutants:
+        m["node"] = locate(icfg, m["fn"], m["line"])
+    data = {"target": target, "edges": call_graph(ast.parse(code)), "icfg": icfg,
             "risk": ranking(mutants), "mutants": mutants}
     with open(out, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)

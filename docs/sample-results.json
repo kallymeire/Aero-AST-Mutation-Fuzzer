@@ -22,6 +22,670 @@
       "validate"
     ]
   ],
+  "icfg": {
+    "nodes": [
+      {
+        "id": "N1",
+        "kind": "entry",
+        "label": "enter validate",
+        "function": "validate",
+        "line": 7,
+        "end_line": 7,
+        "calls": [],
+        "lock": false
+      },
+      {
+        "id": "N2",
+        "kind": "branch",
+        "label": "if @ L8",
+        "function": "validate",
+        "line": 8,
+        "end_line": 8,
+        "calls": [],
+        "lock": false
+      },
+      {
+        "id": "N3",
+        "kind": "return",
+        "label": "return @ L9",
+        "function": "validate",
+        "line": 9,
+        "end_line": 9,
+        "calls": [],
+        "lock": false
+      },
+      {
+        "id": "N4",
+        "kind": "return",
+        "label": "return @ L10",
+        "function": "validate",
+        "line": 10,
+        "end_line": 10,
+        "calls": [],
+        "lock": false
+      },
+      {
+        "id": "N5",
+        "kind": "exit",
+        "label": "exit validate",
+        "function": "validate",
+        "line": 10,
+        "end_line": 10,
+        "calls": [],
+        "lock": false
+      },
+      {
+        "id": "N6",
+        "kind": "entry",
+        "label": "enter clamp",
+        "function": "clamp",
+        "line": 13,
+        "end_line": 13,
+        "calls": [],
+        "lock": false
+      },
+      {
+        "id": "N7",
+        "kind": "branch",
+        "label": "if @ L14",
+        "function": "clamp",
+        "line": 14,
+        "end_line": 14,
+        "calls": [],
+        "lock": false
+      },
+      {
+        "id": "N8",
+        "kind": "return",
+        "label": "return @ L15",
+        "function": "clamp",
+        "line": 15,
+        "end_line": 15,
+        "calls": [],
+        "lock": false
+      },
+      {
+        "id": "N9",
+        "kind": "branch",
+        "label": "if @ L16",
+        "function": "clamp",
+        "line": 16,
+        "end_line": 16,
+        "calls": [],
+        "lock": false
+      },
+      {
+        "id": "N10",
+        "kind": "return",
+        "label": "return @ L17",
+        "function": "clamp",
+        "line": 17,
+        "end_line": 17,
+        "calls": [],
+        "lock": false
+      },
+      {
+        "id": "N11",
+        "kind": "return",
+        "label": "return @ L18",
+        "function": "clamp",
+        "line": 18,
+        "end_line": 18,
+        "calls": [],
+        "lock": false
+      },
+      {
+        "id": "N12",
+        "kind": "exit",
+        "label": "exit clamp",
+        "function": "clamp",
+        "line": 18,
+        "end_line": 18,
+        "calls": [],
+        "lock": false
+      },
+      {
+        "id": "N13",
+        "kind": "entry",
+        "label": "enter add",
+        "function": "add",
+        "line": 21,
+        "end_line": 21,
+        "calls": [],
+        "lock": false
+      },
+      {
+        "id": "N14",
+        "kind": "block",
+        "label": "block @ L22",
+        "function": "add",
+        "line": 22,
+        "end_line": 22,
+        "calls": [],
+        "lock": false
+      },
+      {
+        "id": "N15",
+        "kind": "block",
+        "label": "block @ L23-24 [lock]",
+        "function": "add",
+        "line": 23,
+        "end_line": 24,
+        "calls": [],
+        "lock": true
+      },
+      {
+        "id": "N16",
+        "kind": "return",
+        "label": "return @ L25",
+        "function": "add",
+        "line": 25,
+        "end_line": 25,
+        "calls": [],
+        "lock": false
+      },
+      {
+        "id": "N17",
+        "kind": "exit",
+        "label": "exit add",
+        "function": "add",
+        "line": 25,
+        "end_line": 25,
+        "calls": [],
+        "lock": false
+      },
+      {
+        "id": "N18",
+        "kind": "entry",
+        "label": "enter average",
+        "function": "average",
+        "line": 28,
+        "end_line": 28,
+        "calls": [],
+        "lock": false
+      },
+      {
+        "id": "N19",
+        "kind": "branch",
+        "label": "if @ L29",
+        "function": "average",
+        "line": 29,
+        "end_line": 29,
+        "calls": [
+          "len"
+        ],
+        "lock": false
+      },
+      {
+        "id": "N20",
+        "kind": "return",
+        "label": "return @ L30",
+        "function": "average",
+        "line": 30,
+        "end_line": 30,
+        "calls": [],
+        "lock": false
+      },
+      {
+        "id": "N21",
+        "kind": "return",
+        "label": "return @ L31",
+        "function": "average",
+        "line": 31,
+        "end_line": 31,
+        "calls": [
+          "sum",
+          "len"
+        ],
+        "lock": false
+      },
+      {
+        "id": "N22",
+        "kind": "exit",
+        "label": "exit average",
+        "function": "average",
+        "line": 31,
+        "end_line": 31,
+        "calls": [],
+        "lock": false
+      },
+      {
+        "id": "N23",
+        "kind": "entry",
+        "label": "enter process",
+        "function": "process",
+        "line": 34,
+        "end_line": 34,
+        "calls": [],
+        "lock": false
+      },
+      {
+        "id": "N24",
+        "kind": "block",
+        "label": "block @ L35",
+        "function": "process",
+        "line": 35,
+        "end_line": 35,
+        "calls": [],
+        "lock": false
+      },
+      {
+        "id": "N25",
+        "kind": "loop",
+        "label": "loop @ L36",
+        "function": "process",
+        "line": 36,
+        "end_line": 36,
+        "calls": [],
+        "lock": false
+      },
+      {
+        "id": "N26",
+        "kind": "branch",
+        "label": "if @ L37",
+        "function": "process",
+        "line": 37,
+        "end_line": 37,
+        "calls": [
+          "validate"
+        ],
+        "lock": false
+      },
+      {
+        "id": "N27",
+        "kind": "block",
+        "label": "call add, clamp @ L38",
+        "function": "process",
+        "line": 38,
+        "end_line": 38,
+        "calls": [
+          "add",
+          "clamp"
+        ],
+        "lock": false
+      },
+      {
+        "id": "N28",
+        "kind": "return",
+        "label": "return @ L39",
+        "function": "process",
+        "line": 39,
+        "end_line": 39,
+        "calls": [],
+        "lock": false
+      },
+      {
+        "id": "N29",
+        "kind": "exit",
+        "label": "exit process",
+        "function": "process",
+        "line": 39,
+        "end_line": 39,
+        "calls": [],
+        "lock": false
+      },
+      {
+        "id": "N30",
+        "kind": "entry",
+        "label": "enter main",
+        "function": "main",
+        "line": 42,
+        "end_line": 42,
+        "calls": [],
+        "lock": false
+      },
+      {
+        "id": "N31",
+        "kind": "block",
+        "label": "block @ L43",
+        "function": "main",
+        "line": 43,
+        "end_line": 43,
+        "calls": [],
+        "lock": false
+      },
+      {
+        "id": "N32",
+        "kind": "return",
+        "label": "return @ L44",
+        "function": "main",
+        "line": 44,
+        "end_line": 44,
+        "calls": [
+          "process",
+          "average"
+        ],
+        "lock": false
+      },
+      {
+        "id": "N33",
+        "kind": "exit",
+        "label": "exit main",
+        "function": "main",
+        "line": 44,
+        "end_line": 44,
+        "calls": [],
+        "lock": false
+      },
+      {
+        "id": "N34",
+        "kind": "entry",
+        "label": "enter run_workers",
+        "function": "run_workers",
+        "line": 47,
+        "end_line": 47,
+        "calls": [],
+        "lock": false
+      },
+      {
+        "id": "N35",
+        "kind": "block",
+        "label": "block @ L48",
+        "function": "run_workers",
+        "line": 48,
+        "end_line": 48,
+        "calls": [],
+        "lock": false
+      },
+      {
+        "id": "N36",
+        "kind": "loop",
+        "label": "loop @ L49",
+        "function": "run_workers",
+        "line": 49,
+        "end_line": 49,
+        "calls": [],
+        "lock": false
+      },
+      {
+        "id": "N37",
+        "kind": "block",
+        "label": "block @ L50",
+        "function": "run_workers",
+        "line": 50,
+        "end_line": 50,
+        "calls": [],
+        "lock": false
+      },
+      {
+        "id": "N38",
+        "kind": "loop",
+        "label": "loop @ L51",
+        "function": "run_workers",
+        "line": 51,
+        "end_line": 51,
+        "calls": [],
+        "lock": false
+      },
+      {
+        "id": "N39",
+        "kind": "block",
+        "label": "block @ L52",
+        "function": "run_workers",
+        "line": 52,
+        "end_line": 52,
+        "calls": [],
+        "lock": false
+      },
+      {
+        "id": "N40",
+        "kind": "return",
+        "label": "return @ L53",
+        "function": "run_workers",
+        "line": 53,
+        "end_line": 53,
+        "calls": [],
+        "lock": false
+      },
+      {
+        "id": "N41",
+        "kind": "exit",
+        "label": "exit run_workers",
+        "function": "run_workers",
+        "line": 53,
+        "end_line": 53,
+        "calls": [],
+        "lock": false
+      }
+    ],
+    "edges": [
+      {
+        "from": "N1",
+        "to": "N2",
+        "type": "cfg"
+      },
+      {
+        "from": "N2",
+        "to": "N3",
+        "type": "cfg"
+      },
+      {
+        "from": "N2",
+        "to": "N4",
+        "type": "cfg"
+      },
+      {
+        "from": "N3",
+        "to": "N5",
+        "type": "cfg"
+      },
+      {
+        "from": "N4",
+        "to": "N5",
+        "type": "cfg"
+      },
+      {
+        "from": "N6",
+        "to": "N7",
+        "type": "cfg"
+      },
+      {
+        "from": "N7",
+        "to": "N8",
+        "type": "cfg"
+      },
+      {
+        "from": "N7",
+        "to": "N9",
+        "type": "cfg"
+      },
+      {
+        "from": "N9",
+        "to": "N10",
+        "type": "cfg"
+      },
+      {
+        "from": "N9",
+        "to": "N11",
+        "type": "cfg"
+      },
+      {
+        "from": "N8",
+        "to": "N12",
+        "type": "cfg"
+      },
+      {
+        "from": "N10",
+        "to": "N12",
+        "type": "cfg"
+      },
+      {
+        "from": "N11",
+        "to": "N12",
+        "type": "cfg"
+      },
+      {
+        "from": "N13",
+        "to": "N14",
+        "type": "cfg"
+      },
+      {
+        "from": "N14",
+        "to": "N15",
+        "type": "cfg"
+      },
+      {
+        "from": "N15",
+        "to": "N16",
+        "type": "cfg"
+      },
+      {
+        "from": "N16",
+        "to": "N17",
+        "type": "cfg"
+      },
+      {
+        "from": "N18",
+        "to": "N19",
+        "type": "cfg"
+      },
+      {
+        "from": "N19",
+        "to": "N20",
+        "type": "cfg"
+      },
+      {
+        "from": "N19",
+        "to": "N21",
+        "type": "cfg"
+      },
+      {
+        "from": "N20",
+        "to": "N22",
+        "type": "cfg"
+      },
+      {
+        "from": "N21",
+        "to": "N22",
+        "type": "cfg"
+      },
+      {
+        "from": "N23",
+        "to": "N24",
+        "type": "cfg"
+      },
+      {
+        "from": "N24",
+        "to": "N25",
+        "type": "cfg"
+      },
+      {
+        "from": "N25",
+        "to": "N26",
+        "type": "cfg"
+      },
+      {
+        "from": "N26",
+        "to": "N27",
+        "type": "cfg"
+      },
+      {
+        "from": "N27",
+        "to": "N25",
+        "type": "back"
+      },
+      {
+        "from": "N26",
+        "to": "N25",
+        "type": "back"
+      },
+      {
+        "from": "N25",
+        "to": "N28",
+        "type": "cfg"
+      },
+      {
+        "from": "N28",
+        "to": "N29",
+        "type": "cfg"
+      },
+      {
+        "from": "N30",
+        "to": "N31",
+        "type": "cfg"
+      },
+      {
+        "from": "N31",
+        "to": "N32",
+        "type": "cfg"
+      },
+      {
+        "from": "N32",
+        "to": "N33",
+        "type": "cfg"
+      },
+      {
+        "from": "N34",
+        "to": "N35",
+        "type": "cfg"
+      },
+      {
+        "from": "N35",
+        "to": "N36",
+        "type": "cfg"
+      },
+      {
+        "from": "N36",
+        "to": "N37",
+        "type": "cfg"
+      },
+      {
+        "from": "N37",
+        "to": "N36",
+        "type": "back"
+      },
+      {
+        "from": "N36",
+        "to": "N38",
+        "type": "cfg"
+      },
+      {
+        "from": "N38",
+        "to": "N39",
+        "type": "cfg"
+      },
+      {
+        "from": "N39",
+        "to": "N38",
+        "type": "back"
+      },
+      {
+        "from": "N38",
+        "to": "N40",
+        "type": "cfg"
+      },
+      {
+        "from": "N40",
+        "to": "N41",
+        "type": "cfg"
+      },
+      {
+        "from": "N26",
+        "to": "N1",
+        "type": "call"
+      },
+      {
+        "from": "N27",
+        "to": "N13",
+        "type": "call"
+      },
+      {
+        "from": "N27",
+        "to": "N6",
+        "type": "call"
+      },
+      {
+        "from": "N32",
+        "to": "N23",
+        "type": "call"
+      },
+      {
+        "from": "N32",
+        "to": "N18",
+        "type": "call"
+      }
+    ]
+  },
   "risk": [
     {
       "fn": "validate",
@@ -81,7 +745,8 @@
       "before": "if v < 0 or v > limit:",
       "after": "if v <= 0 or v > limit:",
       "status": "survived",
-      "ms": 120
+      "ms": 21,
+      "node": "N2"
     },
     {
       "id": 2,
@@ -91,7 +756,8 @@
       "before": "if v < 0 or v > limit:",
       "after": "if v < 0 or v >= limit:",
       "status": "survived",
-      "ms": 121
+      "ms": 20,
+      "node": "N2"
     },
     {
       "id": 3,
@@ -101,7 +767,8 @@
       "before": "if x < lo and lo <= hi:",
       "after": "if x <= lo and lo <= hi:",
       "status": "survived",
-      "ms": 145
+      "ms": 22,
+      "node": "N7"
     },
     {
       "id": 4,
@@ -111,7 +778,8 @@
       "before": "if x < lo and lo <= hi:",
       "after": "if x < lo and lo < hi:",
       "status": "survived",
-      "ms": 142
+      "ms": 19,
+      "node": "N7"
     },
     {
       "id": 5,
@@ -121,7 +789,8 @@
       "before": "if x > hi:",
       "after": "if x >= hi:",
       "status": "survived",
-      "ms": 145
+      "ms": 19,
+      "node": "N9"
     },
     {
       "id": 6,
@@ -131,7 +800,8 @@
       "before": "if len(values) == 0:",
       "after": "if len(values) != 0:",
       "status": "killed",
-      "ms": 152
+      "ms": 20,
+      "node": "N19"
     },
     {
       "id": 7,
@@ -141,7 +811,8 @@
       "before": "total = 0",
       "after": "total = 1",
       "status": "survived",
-      "ms": 104
+      "ms": 21,
+      "node": null
     },
     {
       "id": 8,
@@ -151,7 +822,8 @@
       "before": "def validate(v, limit=100):",
       "after": "def validate(v, limit=101):",
       "status": "survived",
-      "ms": 130
+      "ms": 24,
+      "node": "N1"
     },
     {
       "id": 9,
@@ -161,7 +833,8 @@
       "before": "if v < 0 or v > limit:",
       "after": "if v < 1 or v > limit:",
       "status": "survived",
-      "ms": 148
+      "ms": 21,
+      "node": "N2"
     },
     {
       "id": 10,
@@ -171,7 +844,8 @@
       "before": "if len(values) == 0:",
       "after": "if len(values) == 1:",
       "status": "survived",
-      "ms": 129
+      "ms": 20,
+      "node": "N19"
     },
     {
       "id": 11,
@@ -181,7 +855,8 @@
       "before": "return 0",
       "after": "return 1",
       "status": "survived",
-      "ms": 124
+      "ms": 19,
+      "node": "N20"
     },
     {
       "id": 12,
@@ -191,7 +866,8 @@
       "before": "def process(values, lo=0, hi=10):",
       "after": "def process(values, lo=1, hi=10):",
       "status": "survived",
-      "ms": 156
+      "ms": 19,
+      "node": "N23"
     },
     {
       "id": 13,
@@ -201,7 +877,8 @@
       "before": "def process(values, lo=0, hi=10):",
       "after": "def process(values, lo=0, hi=11):",
       "status": "killed",
-      "ms": 121
+      "ms": 20,
+      "node": "N23"
     },
     {
       "id": 14,
@@ -211,7 +888,8 @@
       "before": "out = 0",
       "after": "out = 1",
       "status": "survived",
-      "ms": 145
+      "ms": 19,
+      "node": "N24"
     },
     {
       "id": 15,
@@ -221,7 +899,8 @@
       "before": "values = [3, 12, -4, 7]",
       "after": "values = [4, 12, -4, 7]",
       "status": "killed",
-      "ms": 106
+      "ms": 20,
+      "node": "N31"
     },
     {
       "id": 16,
@@ -231,7 +910,8 @@
       "before": "values = [3, 12, -4, 7]",
       "after": "values = [3, 13, -4, 7]",
       "status": "killed",
-      "ms": 144
+      "ms": 20,
+      "node": "N31"
     },
     {
       "id": 17,
@@ -241,7 +921,8 @@
       "before": "values = [3, 12, -4, 7]",
       "after": "values = [3, 12, -5, 7]",
       "status": "killed",
-      "ms": 112
+      "ms": 19,
+      "node": "N31"
     },
     {
       "id": 18,
@@ -251,7 +932,8 @@
       "before": "values = [3, 12, -4, 7]",
       "after": "values = [3, 12, -4, 8]",
       "status": "killed",
-      "ms": 110
+      "ms": 21,
+      "node": "N31"
     },
     {
       "id": 19,
@@ -261,7 +943,8 @@
       "before": "if v < 0 or v > limit:",
       "after": "if v < 0 and v > limit:",
       "status": "killed",
-      "ms": 103
+      "ms": 20,
+      "node": "N2"
     },
     {
       "id": 20,
@@ -271,7 +954,8 @@
       "before": "if x < lo and lo <= hi:",
       "after": "if x < lo or lo <= hi:",
       "status": "killed",
-      "ms": 97
+      "ms": 20,
+      "node": "N7"
     },
     {
       "id": 21,
@@ -281,7 +965,8 @@
       "before": "with lock:\n    total += n",
       "after": "total += n",
       "status": "survived",
-      "ms": 64
+      "ms": 18,
+      "node": "N15"
     },
     {
       "id": 22,
@@ -291,7 +976,8 @@
       "before": "t.join()",
       "after": "pass",
       "status": "survived",
-      "ms": 64
+      "ms": 23,
+      "node": "N39"
     }
   ]
 }

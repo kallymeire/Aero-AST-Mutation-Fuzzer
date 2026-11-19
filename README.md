@@ -34,7 +34,8 @@ Um centro de comando em HTML puro (sem build, sem dependências) que lê o `resu
 
 | | |
 |---|---|
-| **Grafo de chamadas ao vivo** | Cada função é um nó com anel verde/vermelho (detectado/sobreviveu). Os mutantes caem como faíscas e explodem no bloco atingido. |
+| **Grafo ao vivo** | Cada função é um nó com anel verde/vermelho (detectado/sobreviveu). Os mutantes caem como faíscas e explodem no bloco atingido. |
+| **Visão ICFG** | Alterne para o grafo de fluxo de controle: blocos, ramos `if`, laços (setas tracejadas) e chamadas entre funções. Cada mutante cai no bloco de código onde está. |
 | **Viagem no tempo** | Arraste a linha do tempo para voltar e avançar na execução. |
 | **Inspetor** | Clique em um bloco para ver os mutantes que sobreviveram, com o diff real do código. |
 | **Radar por operador** | Taxa de detecção de cada tipo de mutação. Clique para filtrar o grafo. |
@@ -110,9 +111,10 @@ No GitHub Actions, o relatório também aparece no resumo de cada execução.
 {
   "target": "calc.py",
   "edges": [["main", "process"], ["process", "add"]],
+  "icfg": {"nodes": ["..."], "edges": ["..."]},
   "risk": [{"fn": "validate", "total": 5, "survived": 4, "rate": 0.8}],
   "mutants": [
-    {"id": 1, "op": "CMP_FLIP", "line": 8, "fn": "validate",
+    {"id": 1, "op": "CMP_FLIP", "line": 8, "fn": "validate", "node": "N2",
      "before": "if v < 0 or v > limit:", "after": "if v <= 0 or v > limit:",
      "status": "survived", "ms": 14}
   ]
@@ -123,7 +125,10 @@ No GitHub Actions, o relatório também aparece no resumo de cada execução.
 
 ```
 Aero-AST-Mutation-Fuzzer/
-├── aero/fuzzer.py           # motor de mutação e grafo de chamadas
+├── aero/
+│   ├── fuzzer.py            # motor de mutação, ranking e relatório
+│   ├── icfg.py              # ICFG simplificado (blocos, ramos, laços, chamadas)
+│   └── ...                  # módulos experimentais (gramática, concorrência, LLVM, pipeline)
 ├── docs/                    # dashboard (publicado via GitHub Pages)
 │   ├── index.html
 │   ├── sample-results.json
@@ -138,7 +143,8 @@ Aero-AST-Mutation-Fuzzer/
 - [x] Motor de mutação por AST com 5 operadores (comparação, constante, booleano, lock, join)
 - [x] Grafo de chamadas entre funções e registro do diff real
 - [x] Dashboard interativo com viagem no tempo
-- [ ] ICFG completo (fluxo de controle intra e interprocedural)
+- [x] ICFG simplificado (blocos, ramos, laços e chamadas entre funções) com visão própria no dashboard
+- [ ] ICFG completo (arestas de retorno, exceções, chamadas indiretas)
 - [ ] Suporte a C/C++ via LLVM IR (`clang -emit-llvm` + `llvmlite`)
 - [x] Operadores básicos de concorrência (`LOCK_REMOVE`, `JOIN_REMOVE`)
 - [ ] Mais operadores de concorrência e memória (ordem de locks, `free` antecipado)
@@ -150,7 +156,7 @@ Aero-AST-Mutation-Fuzzer/
 ## ⚠️ Limitações
 
 - Hoje o alvo é código **Python**. O suporte a C++ e LLVM está no roadmap.
-- O grafo mostrado é um **grafo de chamadas** (quem chama quem), não o ICFG completo.
+- O ICFG é **simplificado**: não modela exceções, chamadas indiretas nem arestas de retorno. A visão padrão do dashboard é o grafo de chamadas entre funções.
 - **Mutantes equivalentes** (que não mudam o comportamento, como `x > hi` → `x >= hi` em alguns casos) aparecem como sobreviventes. Revise cada um antes de concluir que falta teste.
 - É uma ferramenta de **auditoria de testes**, não de descoberta de vulnerabilidades reais.
 
