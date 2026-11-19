@@ -1,0 +1,21 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  fuzz:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - name: Testes do próprio fuzzer
+        run: python -m pytest tests -q
+      - name: Rodar o fuzzer no exemplo
+        run: python aero/fuzzer.py examples/demo calc.py "python -m pytest -q"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: results
+          path: results.json

@@ -1,0 +1,237 @@
+{
+  "target": "calc.py",
+  "edges": [
+    [
+      "main",
+      "average"
+    ],
+    [
+      "main",
+      "process"
+    ],
+    [
+      "process",
+      "add"
+    ],
+    [
+      "process",
+      "clamp"
+    ],
+    [
+      "process",
+      "validate"
+    ]
+  ],
+  "mutants": [
+    {
+      "id": 1,
+      "op": "CMP_FLIP",
+      "line": 8,
+      "fn": "validate",
+      "before": "if v < 0 or v > limit:",
+      "after": "if v <= 0 or v > limit:",
+      "status": "survived",
+      "ms": 20
+    },
+    {
+      "id": 2,
+      "op": "CMP_FLIP",
+      "line": 8,
+      "fn": "validate",
+      "before": "if v < 0 or v > limit:",
+      "after": "if v < 0 or v >= limit:",
+      "status": "survived",
+      "ms": 15
+    },
+    {
+      "id": 3,
+      "op": "CMP_FLIP",
+      "line": 14,
+      "fn": "clamp",
+      "before": "if x < lo and lo <= hi:",
+      "after": "if x <= lo and lo <= hi:",
+      "status": "survived",
+      "ms": 15
+    },
+    {
+      "id": 4,
+      "op": "CMP_FLIP",
+      "line": 14,
+      "fn": "clamp",
+      "before": "if x < lo and lo <= hi:",
+      "after": "if x < lo and lo < hi:",
+      "status": "survived",
+      "ms": 14
+    },
+    {
+      "id": 5,
+      "op": "CMP_FLIP",
+      "line": 16,
+      "fn": "clamp",
+      "before": "if x > hi:",
+      "after": "if x >= hi:",
+      "status": "survived",
+      "ms": 14
+    },
+    {
+      "id": 6,
+      "op": "CMP_FLIP",
+      "line": 29,
+      "fn": "average",
+      "before": "if len(values) == 0:",
+      "after": "if len(values) != 0:",
+      "status": "killed",
+      "ms": 16
+    },
+    {
+      "id": 7,
+      "op": "CONST_OFF_BY_ONE",
+      "line": 4,
+      "fn": "<module>",
+      "before": "total = 0",
+      "after": "total = 1",
+      "status": "survived",
+      "ms": 14
+    },
+    {
+      "id": 8,
+      "op": "CONST_OFF_BY_ONE",
+      "line": 7,
+      "fn": "validate",
+      "before": "def validate(v, limit=100):",
+      "after": "def validate(v, limit=101):",
+      "status": "survived",
+      "ms": 14
+    },
+    {
+      "id": 9,
+      "op": "CONST_OFF_BY_ONE",
+      "line": 8,
+      "fn": "validate",
+      "before": "if v < 0 or v > limit:",
+      "after": "if v < 1 or v > limit:",
+      "status": "survived",
+      "ms": 16
+    },
+    {
+      "id": 10,
+      "op": "CONST_OFF_BY_ONE",
+      "line": 29,
+      "fn": "average",
+      "before": "if len(values) == 0:",
+      "after": "if len(values) == 1:",
+      "status": "survived",
+      "ms": 14
+    },
+    {
+      "id": 11,
+      "op": "CONST_OFF_BY_ONE",
+      "line": 30,
+      "fn": "average",
+      "before": "return 0",
+      "after": "return 1",
+      "status": "survived",
+      "ms": 15
+    },
+    {
+      "id": 12,
+      "op": "CONST_OFF_BY_ONE",
+      "line": 34,
+      "fn": "process",
+      "before": "def process(values, lo=0, hi=10):",
+      "after": "def process(values, lo=1, hi=10):",
+      "status": "survived",
+      "ms": 16
+    },
+    {
+      "id": 13,
+      "op": "CONST_OFF_BY_ONE",
+      "line": 34,
+      "fn": "process",
+      "before": "def process(values, lo=0, hi=10):",
+      "after": "def process(values, lo=0, hi=11):",
+      "status": "killed",
+      "ms": 16
+    },
+    {
+      "id": 14,
+      "op": "CONST_OFF_BY_ONE",
+      "line": 35,
+      "fn": "process",
+      "before": "out = 0",
+      "after": "out = 1",
+      "status": "survived",
+      "ms": 14
+    },
+    {
+      "id": 15,
+      "op": "CONST_OFF_BY_ONE",
+      "line": 43,
+      "fn": "main",
+      "before": "values = [3, 12, -4, 7]",
+      "after": "values = [4, 12, -4, 7]",
+      "status": "killed",
+      "ms": 14
+    },
+    {
+      "id": 16,
+      "op": "CONST_OFF_BY_ONE",
+      "line": 43,
+      "fn": "main",
+      "before": "values = [3, 12, -4, 7]",
+      "after": "values = [3, 13, -4, 7]",
+      "status": "killed",
+      "ms": 14
+    },
+    {
+      "id": 17,
+      "op": "CONST_OFF_BY_ONE",
+      "line": 43,
+      "fn": "main",
+      "before": "values = [3, 12, -4, 7]",
+      "after": "values = [3, 12, -5, 7]",
+      "status": "killed",
+      "ms": 14
+    },
+    {
+      "id": 18,
+      "op": "CONST_OFF_BY_ONE",
+      "line": 43,
+      "fn": "main",
+      "before": "values = [3, 12, -4, 7]",
+      "after": "values = [3, 12, -4, 8]",
+      "status": "killed",
+      "ms": 15
+    },
+    {
+      "id": 19,
+      "op": "BOOL_SWAP",
+      "line": 8,
+      "fn": "validate",
+      "before": "if v < 0 or v > limit:",
+      "after": "if v < 0 and v > limit:",
+      "status": "killed",
+      "ms": 15
+    },
+    {
+      "id": 20,
+      "op": "BOOL_SWAP",
+      "line": 14,
+      "fn": "clamp",
+      "before": "if x < lo and lo <= hi:",
+      "after": "if x < lo or lo <= hi:",
+      "status": "killed",
+      "ms": 15
+    },
+    {
+      "id": 21,
+      "op": "LOCK_REMOVE",
+      "line": 23,
+      "fn": "add",
+      "before": "with lock:\n    total += n",
+      "after": "total += n",
+      "status": "survived",
+      "ms": 15
+    }
+  ]
+}
